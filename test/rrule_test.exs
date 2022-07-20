@@ -1,5 +1,5 @@
 defmodule RRuleTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest RRule
 
   test "Lists occurrences between for RRULE" do
@@ -16,6 +16,23 @@ defmodule RRuleTest do
              ~N[2012-01-03 09:30:00],
              ~N[2012-01-04 09:30:00],
              ~N[2012-01-05 09:30:00]
+           ]
+  end
+
+  test "Lists occurrences between for RRULESET" do
+    {:ok, occurrences} =
+      RRule.all_between(
+        ~s(DTSTART:20120101T093000Z\nRRULE:FREQ=MONTHLY;COUNT=5\nRDATE:20120201T023000Z,20120702T023000Z\nEXRULE:FREQ=MONTHLY;COUNT=2\nEXDATE:20120601T023000Z),
+        ~N[2012-01-01 09:00:00],
+        ~N[2012-12-01 09:00:00]
+      )
+
+    assert occurrences == [
+             ~N[2012-02-01 02:30:00],
+             ~N[2012-03-01 09:30:00],
+             ~N[2012-04-01 09:30:00],
+             ~N[2012-05-01 09:30:00],
+             ~N[2012-07-02 02:30:00]
            ]
   end
 
