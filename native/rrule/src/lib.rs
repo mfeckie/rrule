@@ -86,10 +86,63 @@ fn all<'a>(env: Env<'a>, string: &str, limit: u16) -> Result<Term<'a>, String> {
     Ok((mapped).encode(env))
 }
 
+#[rustler::nif]
+fn just_after<'a>(
+    env: Env<'a>,
+    string: &str,
+    after_raw: NaiveDateTime,
+    inclusive: bool,
+) -> Result<Term<'a>, String> {
+    let after = elixir_date_to_chrono(after_raw);
+
+    let rrule: RRuleSet = match string.parse() {
+        Ok(parsed) => parsed,
+        Err(err) => return Err(format!("{}", err)),
+    };
+
+    let result = match rrule.just_after(after, inclusive) {
+        Ok(matched) => match matched {
+            Some(result) => result,
+            None => return Err("No matches found".to_string()),
+        },
+        Err(err) => return Err(format!("{}", err)),
+    };
+
+    Ok((NaiveDateTime::new(&result)).encode(env))
+}
+
+#[rustler::nif]
+fn just_before<'a>(
+    env: Env<'a>,
+    string: &str,
+    before_raw: NaiveDateTime,
+    inclusive: bool,
+) -> Result<Term<'a>, String> {
+    let before = elixir_date_to_chrono(before_raw);
+
+    let rrule: RRuleSet = match string.parse() {
+        Ok(parsed) => parsed,
+        Err(err) => return Err(format!("{}", err)),
+    };
+
+    let result = match rrule.just_before(before, inclusive) {
+        Ok(matched) => match matched {
+            Some(result) => result,
+            None => return Err("No matches found".to_string()),
+        },
+        Err(err) => return Err(format!("{}", err)),
+    };
+
+    Ok((NaiveDateTime::new(&result)).encode(env))
+}
+
 fn elixir_date_to_chrono(input: NaiveDateTime) -> chrono::DateTime<Tz> {
     Utc.ymd(input.year, input.month, input.day)
         .and_hms(input.hour, input.minute, input.second)
         .with_timezone(&UTC)
 }
 
-rustler::init!("Elixir.RRule", [all, all_between, parse]);
+rustler::init!(
+    "Elixir.RRule",
+    [all, all_between, just_after, just_before, parse]
+);

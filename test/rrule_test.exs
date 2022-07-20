@@ -51,4 +51,48 @@ defmodule RRuleTest do
     assert msg ==
              "RRule parsing error: `FREQDAILY` is a malformed property parameter. Parameter should be specified as `key=value`"
   end
+
+  test "Gets occurrence just_before date" do
+    {:ok, occurrences} =
+      RRule.just_before(
+        "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5",
+        ~N[2012-02-01 09:30:00],
+        true
+      )
+
+    assert occurrences == ~N[2012-01-05 09:30:00]
+  end
+
+  test "Gets occurrence just_after date" do
+    {:ok, occurrences} =
+      RRule.just_after(
+        "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5",
+        ~N[2012-01-01 09:30:00],
+        true
+      )
+
+    assert occurrences == ~N[2012-01-01 09:30:00]
+  end
+
+  test "Error tuple for just_after when no results" do
+    {:error, msg} =
+      RRule.just_after(
+        "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5",
+        ~N[2012-02-01 09:30:00],
+        true
+      )
+
+    assert msg == "No matches found"
+  end
+
+  test "Error tuple for just_before when no results" do
+    {:error, msg} =
+      RRule.just_before(
+        "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5",
+        ~N[2011-02-01 09:30:00],
+        true
+      )
+
+    assert msg == "No matches found"
+  end
 end
