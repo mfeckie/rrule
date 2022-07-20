@@ -136,6 +136,14 @@ fn just_before<'a>(
     Ok((NaiveDateTime::new(&result)).encode(env))
 }
 
+#[rustler::nif]
+fn validate<'a>(env: Env<'a>, rrule: &str) -> Term<'a> {
+    match rrule.parse::<RRuleSet>() {
+        Ok(_parsed) => (rustler::types::atom::ok()).encode(env),
+        Err(err) => (rustler::types::atom::error(), format!("{}", err)).encode(env),
+    }
+}
+
 fn elixir_date_to_chrono(input: NaiveDateTime) -> chrono::DateTime<Tz> {
     Utc.ymd(input.year, input.month, input.day)
         .and_hms(input.hour, input.minute, input.second)
@@ -144,5 +152,5 @@ fn elixir_date_to_chrono(input: NaiveDateTime) -> chrono::DateTime<Tz> {
 
 rustler::init!(
     "Elixir.RRule",
-    [all, all_between, just_after, just_before, parse]
+    [all, all_between, just_after, just_before, parse, validate]
 );

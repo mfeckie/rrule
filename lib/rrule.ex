@@ -6,4 +6,5 @@ defmodule RRule do
   def all_between(_string, _start_date, _end_date), do: :erlang.nif_error(:not_loaded)
   def just_before(_string, _date, _inclusive), do: :erlang.nif_error(:not_loaded)
   def just_after(_string, _date, _inclusive), do: :erlang.nif_error(:not_loaded)
+  def validate(_string), do: :erlang.nif_error(:not_loaded)
 end

@@ -112,4 +112,15 @@ defmodule RRuleTest do
 
     assert msg == "No matches found"
   end
+
+  test "Validates RRULE" do
+    assert :ok ==
+             RRule.validate("DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5")
+  end
+
+  test "Error for invalid RRULE" do
+    assert {:error,
+            "RRule parsing error: `DTSTA` is not a valid property name, expected one of: `RRULE,EXRULE,DTSTART,RDATE,EXDATE`"} ==
+             RRule.validate("DTSTA:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5")
+  end
 end
