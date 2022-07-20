@@ -18,4 +18,14 @@ defmodule RRuleTest do
              ~N[2012-01-05 09:30:00]
            ]
   end
+
+  test "Lists all occurrences with limit for RRULE" do
+    occurrences =
+      RRule.all(
+        "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5",
+        1
+      )
+
+    assert occurrences == [ ~N[2012-01-01 09:30:00] ]
+  end
 end

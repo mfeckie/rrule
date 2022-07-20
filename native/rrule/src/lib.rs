@@ -1,9 +1,9 @@
 extern crate rustler;
 use chrono::prelude::*;
 use chrono_tz::{Tz, UTC};
-use rrule::RRuleSet;
-use rustler::{Atom, Encoder, Env, NifStruct, Term, OwnedEnv};
 use lazy_static;
+use rrule::RRuleSet;
+use rustler::{Atom, Encoder, Env, NifStruct, OwnedEnv, Term};
 
 #[rustler::nif]
 fn parse<'a>(env: Env<'a>, string: &str) -> Term<'a> {
@@ -40,14 +40,20 @@ fn all_between<'a>(
 
     let end_date = elixir_date_to_chrono(end_date_raw);
 
-
     let rrule: RRuleSet = string.parse().unwrap();
     let results = rrule.all_between(start_date, end_date, true).unwrap();
 
-    let mapped: Vec<NaiveDateTime> = results
-        .iter()
-        .map(|item| chrono_to_elixir(item))
-        .collect();
+    let mapped: Vec<NaiveDateTime> = results.iter().map(|item| chrono_to_elixir(item)).collect();
+
+    (mapped).encode(env)
+}
+
+#[rustler::nif]
+fn all<'a>(env: Env<'a>, string: &str, limit: u16) -> Term<'a> {
+    let rrule: RRuleSet = string.parse().unwrap();
+    let results = rrule.all(limit).unwrap();
+
+    let mapped: Vec<NaiveDateTime> = results.iter().map(|item| chrono_to_elixir(item)).collect();
 
     (mapped).encode(env)
 }
@@ -71,4 +77,4 @@ fn chrono_to_elixir(input: &chrono::DateTime<Tz>) -> NaiveDateTime {
     }
 }
 
-rustler::init!("Elixir.RRule", [parse, all_between]);
+rustler::init!("Elixir.RRule", [all, all_between, parse]);
