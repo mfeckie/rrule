@@ -1,4 +1,4 @@
-# Rrule
+# RRule
 
 **TODO: Add description**
 

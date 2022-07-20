@@ -1,4 +1,4 @@
-defmodule Rrule.MixProject do
+defmodule RRule.MixProject do
   use Mix.Project
 
   def project do
