@@ -1,9 +1,8 @@
 extern crate rustler;
 use chrono::prelude::*;
 use chrono_tz::{Tz, UTC};
-use lazy_static;
 use rrule::RRuleSet;
-use rustler::{Atom, Encoder, Env, NifStruct, OwnedEnv, Term};
+use rustler::{Atom, Encoder, Env, NifStruct, Term};
 
 #[rustler::nif]
 fn parse<'a>(env: Env<'a>, string: &str) -> Term<'a> {
@@ -12,8 +11,10 @@ fn parse<'a>(env: Env<'a>, string: &str) -> Term<'a> {
     (rrule.to_string()).encode(env)
 }
 
-lazy_static::lazy_static! {
-    static ref CALENDAR_ATOM: Atom = OwnedEnv::new().run(|env| Atom::from_str(env, "Elixir.Calendar.ISO")).unwrap();
+mod atoms {
+    rustler::atoms! {
+        calendar_iso = "Elixir.Calendar.ISO"
+    }
 }
 
 #[derive(Debug, NifStruct)]
@@ -32,7 +33,7 @@ struct NaiveDateTime {
 impl NaiveDateTime {
     pub fn new(input: &chrono::DateTime<Tz>) -> NaiveDateTime {
         NaiveDateTime {
-            calendar: *CALENDAR_ATOM,
+            calendar: atoms::calendar_iso(),
             day: input.day(),
             month: input.month(),
             year: input.year(),
