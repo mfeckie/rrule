@@ -26,3 +26,4 @@ rrule-*.tar
 /tmp/
 
 /priv/native/
+/target
