@@ -43,25 +43,27 @@ impl NaiveDateTime {
             microsecond: (0, 0),
         }
     }
+
+    fn to_chrono(&self) -> chrono::DateTime<Tz> {
+        Utc.ymd(self.year, self.month, self.day)
+            .and_hms(self.hour, self.minute, self.second)
+            .with_timezone(&UTC)
+    }
 }
 
 #[rustler::nif]
 fn all_between<'a>(
     env: Env<'a>,
     string: &str,
-    start_date_raw: NaiveDateTime,
-    end_date_raw: NaiveDateTime,
+    start_date: NaiveDateTime,
+    end_date: NaiveDateTime,
 ) -> Result<Term<'a>, String> {
-    let start_date = elixir_date_to_chrono(start_date_raw);
-
-    let end_date = elixir_date_to_chrono(end_date_raw);
-
     let rrule: RRuleSet = match string.parse() {
         Ok(parsed) => parsed,
         Err(err) => return Err(format!("{}", err)),
     };
 
-    let results = match rrule.all_between(start_date, end_date, true) {
+    let results = match rrule.all_between(start_date.to_chrono(), end_date.to_chrono(), true) {
         Ok(matched) => matched,
         Err(err) => return Err(format!("{}", err)),
     };
@@ -91,17 +93,15 @@ fn all<'a>(env: Env<'a>, string: &str, limit: u16) -> Result<Term<'a>, String> {
 fn just_after<'a>(
     env: Env<'a>,
     string: &str,
-    after_raw: NaiveDateTime,
+    after: NaiveDateTime,
     inclusive: bool,
 ) -> Result<Term<'a>, String> {
-    let after = elixir_date_to_chrono(after_raw);
-
     let rrule: RRuleSet = match string.parse() {
         Ok(parsed) => parsed,
         Err(err) => return Err(format!("{}", err)),
     };
 
-    let result = match rrule.just_after(after, inclusive) {
+    let result = match rrule.just_after(after.to_chrono(), inclusive) {
         Ok(matched) => match matched {
             Some(result) => result,
             None => return Err("No matches found".to_string()),
@@ -116,17 +116,15 @@ fn just_after<'a>(
 fn just_before<'a>(
     env: Env<'a>,
     string: &str,
-    before_raw: NaiveDateTime,
+    before: NaiveDateTime,
     inclusive: bool,
 ) -> Result<Term<'a>, String> {
-    let before = elixir_date_to_chrono(before_raw);
-
     let rrule: RRuleSet = match string.parse() {
         Ok(parsed) => parsed,
         Err(err) => return Err(format!("{}", err)),
     };
 
-    let result = match rrule.just_before(before, inclusive) {
+    let result = match rrule.just_before(before.to_chrono(), inclusive) {
         Ok(matched) => match matched {
             Some(result) => result,
             None => return Err("No matches found".to_string()),
@@ -143,12 +141,6 @@ fn validate<'a>(env: Env<'a>, rrule: &str) -> Term<'a> {
         Ok(_parsed) => (rustler::types::atom::ok()).encode(env),
         Err(err) => (rustler::types::atom::error(), format!("{}", err)).encode(env),
     }
-}
-
-fn elixir_date_to_chrono(input: NaiveDateTime) -> chrono::DateTime<Tz> {
-    Utc.ymd(input.year, input.month, input.day)
-        .and_hms(input.hour, input.minute, input.second)
-        .with_timezone(&UTC)
 }
 
 rustler::init!(
