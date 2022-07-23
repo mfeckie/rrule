@@ -78,13 +78,14 @@ fn all_between<'a>(
     string: &str,
     start_date: DateTime,
     end_date: DateTime,
+    inclusive: bool
 ) -> Result<Term<'a>, String> {
     let rrule: RRuleSet = match string.parse() {
         Ok(parsed) => parsed,
         Err(err) => return Err(format!("{}", err)),
     };
 
-    let results = match rrule.all_between(start_date.to_chrono(), end_date.to_chrono(), true) {
+    let results = match rrule.all_between(start_date.to_chrono(), end_date.to_chrono(), inclusive) {
         Ok(matched) => matched,
         Err(err) => return Err(format!("{}", err)),
     };

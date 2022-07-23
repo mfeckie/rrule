@@ -7,7 +7,8 @@ defmodule RRuleTest do
       RRule.all_between(
         "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5",
         ~U[2012-01-01 09:00:00Z],
-        ~U[2012-02-01 09:00:00Z]
+        ~U[2012-02-01 09:00:00Z],
+        true
       )
 
     assert occurrences == [
@@ -24,7 +25,8 @@ defmodule RRuleTest do
       RRule.all_between(
         ~s(DTSTART:20120101T093000Z\nRRULE:FREQ=MONTHLY;COUNT=5\nRDATE:20120201T023000Z,20120702T023000Z\nEXRULE:FREQ=MONTHLY;COUNT=2\nEXDATE:20120601T023000Z),
         ~U[2012-01-01 09:00:00Z],
-        ~U[2012-12-01 09:00:00Z]
+        ~U[2012-12-01 09:00:00Z],
+        true
       )
 
     assert occurrences == [
@@ -51,7 +53,8 @@ defmodule RRuleTest do
       RRule.all_between(
         "DTSTART:2012010=DAILY;COUNT=5",
         ~U[2012-01-01 09:00:00Z],
-        ~U[2012-02-01 09:00:00Z]
+        ~U[2012-02-01 09:00:00Z],
+        true
       )
 
     assert msg ==
