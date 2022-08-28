@@ -44,7 +44,7 @@ struct DateTime {
     std_offset: i32,
     utc_offset: i32,
     time_zone: String,
-    zone_abbr: String
+    zone_abbr: String,
 }
 
 impl DateTime {
@@ -61,7 +61,7 @@ impl DateTime {
             std_offset: 0,
             utc_offset: 0,
             time_zone: "Etc/UTC".to_string(),
-            zone_abbr: "UTC".to_string()
+            zone_abbr: "UTC".to_string(),
         }
     }
 
@@ -78,7 +78,7 @@ fn all_between<'a>(
     string: &str,
     start_date: DateTime,
     end_date: DateTime,
-    inclusive: bool
+    inclusive: bool,
 ) -> Result<Term<'a>, String> {
     let rrule: RRuleSet = match string.parse() {
         Ok(parsed) => parsed,
@@ -165,7 +165,27 @@ fn validate<'a>(env: Env<'a>, rrule: &str) -> Term<'a> {
     }
 }
 
+#[rustler::nif]
+fn get_start_date<'a>(env: Env<'a>, rrule: &str) -> Result<Term<'a>, String> {
+    let parsed_rule = match rrule.parse::<RRuleSet>() {
+        Ok(parsed) => parsed,
+        Err(err) => return Err(format!("{}", err)),
+    };
+
+    let start_date_time = DateTime::new(parsed_rule.get_dt_start());
+
+    Ok((start_date_time).encode(env))
+}
+
 rustler::init!(
     "Elixir.RRule",
-    [all, all_between, just_after, just_before, parse, validate]
+    [
+        all_between,
+        all,
+        get_start_date,
+        just_after,
+        just_before,
+        parse,
+        validate
+    ]
 );
