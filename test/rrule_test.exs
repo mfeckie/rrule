@@ -126,4 +126,10 @@ defmodule RRuleTest do
             "RRule parsing error: `DTSTA` is not a valid property name, expected one of: `RRULE,EXRULE,DTSTART,RDATE,EXDATE`"} ==
              RRule.validate("DTSTA:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5")
   end
+
+  test "Retrieve DTSTART for RRULE" do
+    {:ok, start_date} = RRule.get_start_date("DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=5")
+
+    assert start_date == ~U[2012-01-01 09:30:00Z]
+  end
 end
