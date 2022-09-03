@@ -1,7 +1,6 @@
 extern crate rustler;
-use chrono::prelude::*;
-use chrono_tz::{Tz, UTC};
-use rrule::RRuleSet;
+use chrono::{DateTime, Datelike, TimeZone, Timelike};
+use rrule::{RRuleSet, Tz};
 use rustler::{Atom, Encoder, Env, NifStruct, Term};
 
 #[rustler::nif]
@@ -32,7 +31,7 @@ mod atoms {
 // zone_abbr: "UTC"
 #[derive(Debug, NifStruct)]
 #[module = "DateTime"]
-struct DateTime {
+struct ElixirDateTime {
     calendar: Atom,
     day: u32,
     month: u32,
@@ -47,16 +46,16 @@ struct DateTime {
     zone_abbr: String,
 }
 
-impl DateTime {
-    pub fn new(input: &chrono::DateTime<Tz>) -> DateTime {
-        DateTime {
+impl ElixirDateTime {
+    pub fn new(input: &DateTime<Tz>) -> ElixirDateTime {
+        ElixirDateTime {
             calendar: atoms::calendar_iso(),
-            day: input.day(),
-            month: input.month(),
-            year: input.year(),
-            hour: input.hour(),
-            minute: input.minute(),
-            second: input.second(),
+            day: input.naive_utc().day(),
+            month: input.naive_utc().month(),
+            year: input.naive_utc().year(),
+            hour: input.naive_utc().hour(),
+            minute: input.naive_utc().minute(),
+            second: input.naive_utc().second(),
             microsecond: (0, 0),
             std_offset: 0,
             utc_offset: 0,
@@ -65,10 +64,10 @@ impl DateTime {
         }
     }
 
-    fn to_chrono(&self) -> chrono::DateTime<Tz> {
-        Utc.ymd(self.year, self.month, self.day)
+    fn to_chrono(&self) -> DateTime<Tz> {
+        Tz::UTC
+            .ymd(self.year, self.month, self.day)
             .and_hms(self.hour, self.minute, self.second)
-            .with_timezone(&UTC)
     }
 }
 
@@ -76,85 +75,22 @@ impl DateTime {
 fn all_between<'a>(
     env: Env<'a>,
     string: &str,
-    start_date: DateTime,
-    end_date: DateTime,
-    inclusive: bool,
+    start_date: ElixirDateTime,
+    end_date: ElixirDateTime,
+    limit: u16,
 ) -> Result<Term<'a>, String> {
     let rrule: RRuleSet = match string.parse() {
         Ok(parsed) => parsed,
         Err(err) => return Err(format!("{}", err)),
     };
 
-    let results = match rrule.all_between(start_date.to_chrono(), end_date.to_chrono(), inclusive) {
-        Ok(matched) => matched,
-        Err(err) => return Err(format!("{}", err)),
-    };
+    let (results, has_more) = rrule
+        .after(start_date.to_chrono())
+        .before(end_date.to_chrono())
+        .all(limit);
 
-    let mapped: Vec<DateTime> = results.iter().map(DateTime::new).collect();
-    Ok((mapped).encode(env))
-}
-
-#[rustler::nif]
-fn all<'a>(env: Env<'a>, string: &str, limit: u16) -> Result<Term<'a>, String> {
-    let rrule: RRuleSet = match string.parse() {
-        Ok(parsed) => parsed,
-        Err(err) => return Err(format!("{}", err)),
-    };
-
-    let results = match rrule.all(limit) {
-        Ok(matched) => matched,
-        Err(err) => return Err(format!("{}", err)),
-    };
-
-    let mapped: Vec<DateTime> = results.iter().map(DateTime::new).collect();
-
-    Ok((mapped).encode(env))
-}
-
-#[rustler::nif]
-fn just_after<'a>(
-    env: Env<'a>,
-    string: &str,
-    after: DateTime,
-    inclusive: bool,
-) -> Result<Term<'a>, String> {
-    let rrule: RRuleSet = match string.parse() {
-        Ok(parsed) => parsed,
-        Err(err) => return Err(format!("{}", err)),
-    };
-
-    let result = match rrule.just_after(after.to_chrono(), inclusive) {
-        Ok(matched) => match matched {
-            Some(result) => result,
-            None => return Err("No matches found".to_string()),
-        },
-        Err(err) => return Err(format!("{}", err)),
-    };
-
-    Ok((DateTime::new(&result)).encode(env))
-}
-
-#[rustler::nif]
-fn just_before<'a>(
-    env: Env<'a>,
-    string: &str,
-    before: DateTime,
-    inclusive: bool,
-) -> Result<Term<'a>, String> {
-    let rrule: RRuleSet = match string.parse() {
-        Ok(parsed) => parsed,
-        Err(err) => return Err(format!("{}", err)),
-    };
-
-    let result = match rrule.just_before(before.to_chrono(), inclusive) {
-        Ok(matched) => match matched {
-            Some(result) => result,
-            None => return Err("No matches found".to_string()),
-        },
-        Err(err) => return Err(format!("{}", err)),
-    };
-
-    Ok((DateTime::new(&result)).encode(env))
+    let mapped: Vec<ElixirDateTime> = results.iter().map(ElixirDateTime::new).collect();
+    Ok(((mapped, has_more)).encode(env))
 }
 
 #[rustler::nif]
@@ -172,20 +108,12 @@ fn get_start_date<'a>(env: Env<'a>, rrule: &str) -> Result<Term<'a>, String> {
         Err(err) => return Err(format!("{}", err)),
     };
 
-    let start_date_time = DateTime::new(parsed_rule.get_dt_start());
+    let start_date_time = ElixirDateTime::new(parsed_rule.get_dt_start());
 
     Ok((start_date_time).encode(env))
 }
 
 rustler::init!(
     "Elixir.RRule",
-    [
-        all_between,
-        all,
-        get_start_date,
-        just_after,
-        just_before,
-        parse,
-        validate
-    ]
+    [all_between, get_start_date, parse, validate]
 );
