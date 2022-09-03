@@ -28,3 +28,4 @@ rrule-*.tar
 /priv/native/
 
 /native/*/target
+/target

@@ -4,7 +4,7 @@ defmodule RRule.MixProject do
   def project do
     [
       app: :rrule,
-      version: "0.3.0",
+      version: "0.4.0",
       elixir: "~> 1.13",
       description: "Elixir wrapper for Rust based RRule parsing",
       start_permanent: Mix.env() == :prod,
@@ -31,7 +31,10 @@ defmodule RRule.MixProject do
       links: %{
         "Github" => "https://github.com/mfeckie/rrule"
       },
-      files: ["lib", "native", "README.md", "mix.exs"]
+      files: ["lib", "native", "README.md", "mix.exs"],
+      exclude_patterns: [
+        "native/rrule/target"
+      ]
     ]
   end
 
