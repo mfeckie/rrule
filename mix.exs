@@ -9,6 +9,10 @@ defmodule RRule.MixProject do
       description: "Elixir wrapper for Rust based RRule parsing",
       start_permanent: Mix.env() == :prod,
       package: package(),
+      docs: [
+        extras: ["README.md"],
+        main: "readme"
+      ],
       deps: deps()
     ]
   end

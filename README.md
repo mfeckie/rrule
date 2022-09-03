@@ -1,6 +1,8 @@
 # RRule
 
-**TODO: Add description**
+RRule is a wrapper around the Rust based library [rrule](https://github.com/fmeringdal/rust-rrule).
+
+To consume it in your projects, you'll need to have a Rust compiler [installed](https://www.rust-lang.org/en-US/install.html).
 
 ## Installation
 
@@ -14,8 +16,3 @@ def deps do
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/rrule>.
-

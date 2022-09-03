@@ -4,10 +4,16 @@ use rrule::{RRuleSet, Tz};
 use rustler::{Atom, Encoder, Env, NifStruct, Term};
 
 #[rustler::nif]
-fn parse<'a>(env: Env<'a>, string: &str) -> Term<'a> {
-    let rrule: RRuleSet = string.parse().unwrap();
+fn parse<'a>(env: Env<'a>, string: &str) -> Result<Term<'a>, String> {
+    // let rrule: RRuleSet = string.parse().unwrap();
 
-    (rrule.to_string()).encode(env)
+    // (rrule.to_string()).encode(env)
+    let parsed: String = match string.parse::<RRuleSet>() {
+        Ok(rrule) => rrule.to_string(),
+        Err(err) => return Err(format!("{}", err)),
+    };
+
+    Ok((parsed).encode(env))
 }
 
 mod atoms {
