@@ -6,6 +6,7 @@ defmodule RRule.MixProject do
       app: :rrule,
       version: "0.1.0",
       elixir: "~> 1.13",
+      description: "Elixir wrapper for Rust based RRule parsing",
       start_permanent: Mix.env() == :prod,
       package: package(),
       deps: deps()
