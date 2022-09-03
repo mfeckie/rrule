@@ -4,7 +4,7 @@ defmodule RRule.MixProject do
   def project do
     [
       app: :rrule,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.13",
       description: "Elixir wrapper for Rust based RRule parsing",
       start_permanent: Mix.env() == :prod,
@@ -37,7 +37,7 @@ defmodule RRule.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:rustler, "0.25.0"},
+      {:rustler, "0.26.0"},
       {:ex_doc, "0.28.5"}
     ]
   end
