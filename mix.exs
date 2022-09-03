@@ -7,6 +7,7 @@ defmodule RRule.MixProject do
       version: "0.1.0",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
+      package: package(),
       deps: deps()
     ]
   end
@@ -15,6 +16,16 @@ defmodule RRule.MixProject do
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+  def package do
+    [
+      licenses: ["MIT"],
+      maintainers: ["Martin Feckie"],
+      links: %{
+        "Github" => "https://github.com/mfeckie/rrule"
+      }
     ]
   end
 
