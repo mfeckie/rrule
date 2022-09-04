@@ -17,6 +17,15 @@ defmodule RRule do
   def parse(_RRule_string), do: :erlang.nif_error(:not_loaded)
 
   @doc """
+  Given a RRule, return occurrences until a limit is reached
+
+  *Note* Maximum occurrences is limited to 65,535 to avoid order to prevent infinite loops
+
+  """
+  @spec all(String.t(), non_neg_integer()) :: {:ok, [DateTime.t()]} | {:error, String.t()}
+  def all(_rrule_string, _number), do: :erlang.nif_error(:not_loaded)
+
+  @doc """
   Given a RRule, return all occurrences between the given UTC DateTimes.
 
   In the success case, the return will be `{:ok, {occurrences, has_more }}`.  The `has_more` boolean is used to inform you if there

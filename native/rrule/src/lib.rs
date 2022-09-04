@@ -78,6 +78,25 @@ impl ElixirDateTime {
 }
 
 #[rustler::nif]
+fn all<'a>(env: Env<'a>, string: &str, limit: u64) -> Result<Term<'a>, String> {
+    if limit > 65535 {
+        return Err(format!("Limit must be below 65,535"))
+    }
+
+    let rrule: RRuleSet = match string.parse() {
+        Ok(parsed) => parsed,
+        Err(err) => return Err(format!("{}", err)),
+    };
+
+    let (results, _has_more) = rrule
+    .all(limit as u16);
+
+    let mapped: Vec<ElixirDateTime> = results.iter().map(ElixirDateTime::new).collect();
+
+    Ok((mapped).encode(env))
+}
+
+#[rustler::nif]
 fn all_between<'a>(
     env: Env<'a>,
     string: &str,
@@ -121,5 +140,5 @@ fn get_start_date<'a>(env: Env<'a>, rrule: &str) -> Result<Term<'a>, String> {
 
 rustler::init!(
     "Elixir.RRule",
-    [all_between, get_start_date, parse, validate]
+    [all, all_between, get_start_date, parse, validate]
 );

@@ -66,4 +66,35 @@ defmodule RRuleTest do
 
     assert start_date == ~U[2012-01-01 09:30:00Z]
   end
+
+  test "Lists all occurrences for RRULE up to limit" do
+    {:ok, occurrences} =
+      RRule.all(
+        "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=100",
+        10
+      )
+
+    assert occurrences == [
+             ~U[2012-01-01 09:30:00Z],
+             ~U[2012-01-02 09:30:00Z],
+             ~U[2012-01-03 09:30:00Z],
+             ~U[2012-01-04 09:30:00Z],
+             ~U[2012-01-05 09:30:00Z],
+             ~U[2012-01-06 09:30:00Z],
+             ~U[2012-01-07 09:30:00Z],
+             ~U[2012-01-08 09:30:00Z],
+             ~U[2012-01-09 09:30:00Z],
+             ~U[2012-01-10 09:30:00Z]
+           ]
+  end
+
+  test "Returns error tuple when limit is exceeded" do
+    {:error, msg} =
+      RRule.all(
+        "DTSTART:20120101T093000Z\nRRULE:FREQ=DAILY;COUNT=100",
+        65_536
+      )
+
+    assert msg == "Limit must be below 65,535"
+  end
 end
