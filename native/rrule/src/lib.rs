@@ -102,8 +102,12 @@ fn all_between<'a>(
     string: &str,
     start_date: ElixirDateTime,
     end_date: ElixirDateTime,
-    limit: u16,
+    limit: u64,
 ) -> Result<Term<'a>, String> {
+    if limit > 65535 {
+        return Err(format!("Limit must be below 65,535"))
+    }
+
     let rrule: RRuleSet = match string.parse() {
         Ok(parsed) => parsed,
         Err(err) => return Err(format!("{}", err)),
@@ -112,7 +116,7 @@ fn all_between<'a>(
     let (results, has_more) = rrule
         .after(start_date.to_chrono())
         .before(end_date.to_chrono())
-        .all(limit);
+        .all(limit as u16);
 
     let mapped: Vec<ElixirDateTime> = results.iter().map(ElixirDateTime::new).collect();
     Ok(((mapped, has_more)).encode(env))
