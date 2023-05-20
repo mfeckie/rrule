@@ -72,8 +72,8 @@ impl ElixirDateTime {
 
     fn to_chrono(&self) -> DateTime<Tz> {
         Tz::UTC
-            .ymd(self.year, self.month, self.day)
-            .and_hms(self.hour, self.minute, self.second)
+            .with_ymd_and_hms(self.year, self.month, self.day, self.hour, self.minute, self.second)
+            .unwrap()
     }
 }
 
