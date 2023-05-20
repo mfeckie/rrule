@@ -4,7 +4,7 @@ defmodule RRule.MixProject do
   def project do
     [
       app: :rrule,
-      version: "0.5.1",
+      version: "0.5.2",
       elixir: "~> 1.13 or ~> 1.14",
       description: "Elixir wrapper for Rust based RRule parsing",
       start_permanent: Mix.env() == :prod,
