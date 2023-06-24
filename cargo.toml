@@ -1,5 +1,5 @@
 [workspace]
 
 members = [
-  "native/rrule"
+  "native/rrule_ex"
 ]

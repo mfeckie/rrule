@@ -299,16 +299,6 @@ checksum = "a5996294f19bd3aae0453a862ad728f60e6600695733dd5df01da90c54363a3c"
 
 [[package]]
 name = "rrule"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "chrono-tz 0.8.2",
- "rrule 0.10.0",
- "rustler",
-]
-
-[[package]]
-name = "rrule"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "822efdcd86c668b92c5ddc4c08906b731d184feb3e595575924737495ae928a7"
@@ -319,6 +309,16 @@ dependencies = [
  "log",
  "regex",
  "thiserror",
+]
+
+[[package]]
+name = "rrule_ex"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "chrono-tz 0.8.2",
+ "rrule",
+ "rustler",
 ]
 
 [[package]]
