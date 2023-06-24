@@ -46,12 +46,12 @@ jobs:
       id: build-crate
       uses: philss/rustler-precompiled-action@v1.0.1
       with:
-        project-name: rrule_ex
+        project-name: rrule
         project-version: ${{ env.PROJECT_VERSION }}
         target: ${{ matrix.job.target }}
         nif-version: ${{ matrix.nif }}
         use-cross: ${{ matrix.job.use-cross }}
-        project-dir: "native/rrule_ex"
+        project-dir: "native/rrule"
 
     - name: Artifact upload
       uses: actions/upload-artifact@v3

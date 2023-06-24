@@ -1,11 +1,11 @@
 [package]
-name = "rrule_ex"
+name = "rrule"
 version = "0.1.0"
 authors = []
 edition = "2018"
 
 [lib]
-name = "rrule_ex"
+name = "rrule"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 

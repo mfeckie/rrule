@@ -5,7 +5,7 @@ defmodule RRule.MixProject do
 
   def project do
     [
-      app: :rrule_ex,
+      app: :rrule,
       version: @version,
       elixir: "~> 1.13 or ~> 1.14",
       description: "Elixir wrapper for Rust based RRule parsing",
@@ -35,7 +35,7 @@ defmodule RRule.MixProject do
       },
       files: ["lib", "native", "README.md", "mix.exs", "checksum-*.exs"],
       exclude_patterns: [
-        "native/rrule_ex/target"
+        "native/rrule/target"
       ]
     ]
   end
