@@ -6,3 +6,6 @@
 
 - Switches to rustler precompiled so you don't need to have a rust compiler installed to use the library if you're on an architecture supported by the precompiler :tada:
 
+## 0.6.1
+
+- Bump Rustler
