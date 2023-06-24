@@ -33,7 +33,7 @@ defmodule RRule.MixProject do
       links: %{
         "Github" => "https://github.com/mfeckie/rrule"
       },
-      files: ["lib", "native", "README.md", "mix.exs"],
+      files: ["lib", "native", "README.md", "mix.exs", "checksum-*.exs"],
       exclude_patterns: [
         "native/rrule/target"
       ]
